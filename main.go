@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	listenAddr := flag.String("listenaddr", ":3000", "the server port")
+	listenAddr := flag.String("listenaddr", "localhost:3000", "the server port")
 	flag.Parse()
 
 	store := storage.NewMemoryStorage()
