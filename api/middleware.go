@@ -7,13 +7,16 @@ import (
 	"github.com/erenhncr/go-api-structure/types"
 )
 
-func (s *Server) questionsMiddleware(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func (server *Server) questionsMiddleware(w http.ResponseWriter, r *http.Request) {
+	server.setDefaultHeaders(&w)
+
 	switch r.Method {
-	case "GET":
-		s.handleGetQuestions(w, r)
-	case "POST":
-		s.handleAddQuestion(w, r)
+	case http.MethodGet:
+		server.handleGetQuestions(w, r)
+	case http.MethodPost:
+		server.handleAddQuestion(w, r)
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK) // TODO: add proper origin checking
 	default:
 		errorResponse := types.NewErrorResponse(types.ErrorCodeUnsupportedMethod, "")
 		w.WriteHeader(http.StatusMethodNotAllowed)

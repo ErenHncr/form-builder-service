@@ -54,4 +54,4 @@ type Question struct {
 	Display    QuestionDisplay  `json:"display"`
 }
 
-func (q *Question) validate() bool { return true }
+func (q *Question) Validate() bool { return true }

@@ -9,7 +9,7 @@ import (
 	"github.com/erenhncr/go-api-structure/types"
 )
 
-func (s *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	size := r.URL.Query().Get("size")
 
@@ -25,7 +25,7 @@ func (s *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
 
 	pagination := types.NewPagination(pageInt, sizeInt)
 
-	questions := s.store.GetQuestions(pagination)
+	questions := server.store.GetQuestions(pagination)
 
 	if len(questions) == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -40,15 +40,19 @@ func (s *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (s *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) {
 	var question types.Question
+
 	err := json.NewDecoder(r.Body).Decode(&question)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "")
+		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
-	s.store.AddQuestion(question)
+
+	server.store.AddQuestion(question)
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("OK"))
 }

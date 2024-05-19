@@ -1,17 +1,21 @@
 package types
 
+import "net/http"
+
 type ErrorCodeKey int
 
 const (
-	ErrorCodeDefault           = 1
-	ErrorCodeUnsupportedMethod = 2
-	ErrorCodeNotFound          = 3
+	ErrorCodeDefault           = 100
+	ErrorCodeBadRequest        = http.StatusBadRequest
+	ErrorCodeNotFound          = http.StatusNotFound
+	ErrorCodeUnsupportedMethod = http.StatusMethodNotAllowed
 )
 
 var ErrorCode = map[ErrorCodeKey]string{
 	ErrorCodeDefault:           "default",
-	ErrorCodeUnsupportedMethod: "unsupported_method",
+	ErrorCodeBadRequest:        "bad_request",
 	ErrorCodeNotFound:          "not_found",
+	ErrorCodeUnsupportedMethod: "unsupported_method",
 }
 
 func (k ErrorCodeKey) String() string {
