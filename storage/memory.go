@@ -17,7 +17,10 @@ var questions = []types.Question{
 		Key:        "approveConsentAndInformationalText",
 		Type:       "checkbox",
 		IsRequired: true,
-		Label:      "I have read and approved the terms regarding the information and documents to be provided through the platform within the scope of the Law on the Protection of Personal Data No. 6698",
+		Label: types.QuestionLabel{
+			"EN": "Read and Approve",
+			"TR": "Okudum onaylıyorum",
+		},
 		Links: []types.QuestionLink{{
 			Text: "şartları",
 			URL:  "https://google.com",
@@ -31,7 +34,10 @@ func addExampleQuestion() error {
 		Key:        "approveConsentAndInformationalText",
 		Type:       "checkbox",
 		IsRequired: true,
-		Label:      "I have read and approved the terms regarding the information and documents to be provided through the platform within the scope of the Law on the Protection of Personal Data No. 6698",
+		Label: types.QuestionLabel{
+			"EN": "Read and Approve",
+			"TR": "Okudum onaylıyorum",
+		},
 		Links: []types.QuestionLink{{
 			Text: "şartları",
 			URL:  "https://google.com",
@@ -58,15 +64,8 @@ func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Questi
 	return filteredQuestions
 }
 
-func (s *MemoryStorage) AddQuestion(question types.Question) bool {
+func (s *MemoryStorage) AddQuestion(question types.Question) error {
 	questions = append(questions, question)
 
-	return true
-}
-
-func (s *MemoryStorage) Get(id int) *types.User {
-	return &types.User{
-		ID:   1,
-		Name: "Foo",
-	}
+	return nil
 }

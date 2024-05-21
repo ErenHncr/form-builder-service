@@ -35,15 +35,15 @@ func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request)
 	}
 
 	totalPages := math.Ceil(float64(len(questions)) / float64(pagination.Size))
-	response := types.NewPaginatedResponse(questions, pagination, int(totalPages))
+	response := types.NewPaginatedResponse(questions, pagination, len(questions), int(totalPages))
 
 	json.NewEncoder(w).Encode(response)
 }
 
 func (server *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) {
-	var question types.Question
+	question := types.NewQuestion()
 
-	err := json.NewDecoder(r.Body).Decode(&question)
+	err := json.NewDecoder(r.Body).Decode(question)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -52,7 +52,25 @@ func (server *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	server.store.AddQuestion(question)
+	isValid, validations := question.Validate()
+
+	if !isValid {
+		errorResponse := types.ErrorResponse{}
+		for _, validation := range validations {
+			errorResponse.Add(types.ErrorCodeBadRequest, validation)
+		}
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	err = server.store.AddQuestion(*question)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		errorResponse := types.NewErrorResponse(types.ErrorCodeDefault, "")
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("OK"))
+	json.NewEncoder(w).Encode(question)
 }
