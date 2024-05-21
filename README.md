@@ -12,5 +12,6 @@ TODOs
 
 [ ] - Create Question and Form structs in the types package.
 [ ] - Add MustHaveKey method to Question struct
+[ ] - Add minimum and maximum methods to QuestionLabel struct for validation
 [ ] - Send a custom validation code for different cases
 [ ] - Separate question struct into different files
