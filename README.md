@@ -11,3 +11,6 @@ Entry point of the application is in the ```main.go``` file. The ```main.go``` f
 TODOs
 
 [ ] - Create Question and Form structs in the types package.
+[ ] - Add MustHaveKey method to Question struct
+[ ] - Send a custom validation code for different cases
+[ ] - Separate question struct into different files
