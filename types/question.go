@@ -22,6 +22,24 @@ func (t QuestionType) String() string {
 	return QuestionTypeMap[t]
 }
 
+type validationKey string
+
+const (
+	invalidKey        = "invalid_key"
+	invalidType       = "invalid_type"
+	invalidLabel      = "invalid_label"
+	invalidLabelKey   = "invalid_label_key"
+	invalidLabelValue = "invalid_label_value"
+)
+
+var validationError = map[validationKey]string{
+	invalidKey:        invalidKey,
+	invalidType:       invalidType,
+	invalidLabel:      invalidLabel,
+	invalidLabelKey:   invalidLabelKey,
+	invalidLabelValue: invalidLabelValue,
+}
+
 type QuestionLink struct {
 	Text         string `json:"text"`
 	URL          string `json:"url"`
@@ -61,7 +79,7 @@ type QuestionDisplayCondition struct {
 	// accepts number, string string array number array
 }
 
-type QuestionLabel map[Language]string
+type QuestionLabel map[LanguageKey]string
 
 type Question struct {
 	ID         string           `json:"id"`
@@ -89,9 +107,16 @@ func NewQuestion() *Question {
 	}
 }
 
+func (q *Question) MustHaveKey() string {
+	if q.Key == "" {
+		return fmt.Errorf(validationError[invalidKey]).Error()
+	}
+	return ""
+}
+
 func (q *Question) MustHaveType() string {
 	if QuestionTypeMap[q.Type] == "" {
-		return fmt.Errorf("must have a valid type").Error()
+		return fmt.Errorf(validationError[invalidType]).Error()
 	}
 	return ""
 }
@@ -100,16 +125,16 @@ func (q *Question) MustHaveLabel() string {
 	message := ""
 
 	if q.Label == nil || len(q.Label) == 0 {
-		message = fmt.Errorf("must have a label").Error()
+		message = fmt.Errorf(validationError[invalidLabel]).Error()
 		return message
 	}
 
 	for labelKey := range q.Label {
-		if LanguageMap[labelKey] == "" {
-			message = fmt.Errorf("must have a valid label key").Error()
+		if Language[labelKey] == "" {
+			message = fmt.Errorf(validationError[invalidLabelKey]).Error()
 			return message
 		} else if q.Label[labelKey] == "" {
-			message = fmt.Errorf("must have a valid label value").Error()
+			message = fmt.Errorf(validationError[invalidLabelValue]).Error()
 		}
 	}
 
@@ -117,15 +142,16 @@ func (q *Question) MustHaveLabel() string {
 }
 
 func (q *Question) Validate() (bool, []string) {
-	var validations = []string{q.MustHaveType(), q.MustHaveLabel()}
-
+	validations := []string{q.MustHaveKey(), q.MustHaveType(), q.MustHaveLabel()}
 	isValid := true
+	validationErrors := make([]string, 0)
+
 	for _, validation := range validations {
 		if validation != "" {
-			isValid = false
-			break
+			isValid = isValid && false
+			validationErrors = append(validationErrors, validation)
 		}
 	}
 
-	return isValid, validations
+	return isValid, validationErrors
 }

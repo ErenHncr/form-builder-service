@@ -1,17 +1,17 @@
 package types
 
-type Language string
+type LanguageKey string
 
 const (
 	LanguageEN = "EN"
 	LanguageTR = "TR"
 )
 
-var LanguageMap = map[Language]string{
+var Language = map[LanguageKey]string{
 	LanguageEN: LanguageEN,
 	LanguageTR: LanguageTR,
 }
 
-func (language Language) String() string {
-	return LanguageMap[language]
+func (l LanguageKey) String() string {
+	return Language[l]
 }
