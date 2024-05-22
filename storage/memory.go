@@ -64,7 +64,7 @@ func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Questi
 	return filteredQuestions
 }
 
-func (s *MemoryStorage) AddQuestion(question types.Question) error {
+func (s *MemoryStorage) CreateQuestion(question types.Question) error {
 	questions = append(questions, question)
 
 	return nil

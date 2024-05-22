@@ -40,7 +40,7 @@ func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(response)
 }
 
-func (server *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Request) {
 	question := types.NewQuestion()
 
 	err := json.NewDecoder(r.Body).Decode(question)
@@ -63,7 +63,7 @@ func (server *Server) handleAddQuestion(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = server.store.AddQuestion(*question)
+	err = server.store.CreateQuestion(*question)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		errorResponse := types.NewErrorResponse(types.ErrorCodeDefault, "")

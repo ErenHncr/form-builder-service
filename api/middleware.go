@@ -14,7 +14,7 @@ func (server *Server) questionsMiddleware(w http.ResponseWriter, r *http.Request
 	case http.MethodGet:
 		server.handleGetQuestions(w, r)
 	case http.MethodPost:
-		server.handleAddQuestion(w, r)
+		server.handleCreateQuestion(w, r)
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK) // TODO: add proper origin checking
 	default:
