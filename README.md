@@ -13,6 +13,17 @@ TODOs
 [x] - Add MustHaveKey method to Question struct
 [ ] - Add minimum and maximum methods to QuestionLabel struct for validation
 [ ] - Add GetQuestion, DeleteQuestion and UpdateQuestion methods
+[ ] - Add environment variables and read with https://github.com/joho/godotenv
+[ ] - Add database
+  sqlite
+    https://turso.tech
+    https://earthly.dev/blog/golang-sqlite/
+  postgres
+    https://vercel.com/docs/storage/vercel-postgres
+  [ ] - Choose postgres/sqlite
+  [ ] - Add database connection and query methods
+  [ ] - Add database migration methods
+  [ ] - Add database seeding methods
 [ ] - Create Question and Form structs in the types package.
 [ ] - Send a custom validation code for different cases
 [ ] - Separate question struct into different files
