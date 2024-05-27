@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"fmt"
+
 	"github.com/erenhncr/go-api-structure/types"
 	"github.com/google/uuid"
 )
@@ -66,6 +68,26 @@ func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Questi
 
 func (s *MemoryStorage) CreateQuestion(question types.Question) error {
 	questions = append(questions, question)
+
+	return nil
+}
+
+func (s *MemoryStorage) DeleteQuestion(id string) error {
+	questionIndex := -1
+	for i, element := range questions {
+		if element.ID == id {
+			questionIndex = i
+			break
+		}
+	}
+
+	if questionIndex == -1 {
+		return fmt.Errorf("invalid_id")
+	}
+
+	questionsCopy := make([]types.Question, 0)
+	questionsCopy = append(questionsCopy, questions[:questionIndex]...)
+	questions = append(questionsCopy, questions[questionIndex+1:]...)
 
 	return nil
 }

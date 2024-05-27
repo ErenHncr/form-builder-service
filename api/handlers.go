@@ -74,3 +74,25 @@ func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(question)
 }
+
+func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Request) {}
+func (server *Server) handleDeleteQuestion(w http.ResponseWriter, r *http.Request) {
+	questionId := r.PathValue("id")
+
+	if questionId == "" {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "question_id_required")
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	if err := server.store.DeleteQuestion(questionId); err != nil {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeNotFound, err.Error())
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	json.NewEncoder(w).Encode(types.ResponseID{
+		ID: questionId,
+	})
+}

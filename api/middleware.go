@@ -15,6 +15,10 @@ func (server *Server) questionsMiddleware(w http.ResponseWriter, r *http.Request
 		server.handleGetQuestions(w, r)
 	case http.MethodPost:
 		server.handleCreateQuestion(w, r)
+	case http.MethodPatch:
+		server.handleUpdateQuestion(w, r)
+	case http.MethodDelete:
+		server.handleDeleteQuestion(w, r)
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK) // TODO: add proper origin checking
 	default:
