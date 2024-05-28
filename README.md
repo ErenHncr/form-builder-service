@@ -10,10 +10,11 @@ Entry point of the application is in the ```main.go``` file. The ```main.go``` f
 
 TODOs
 
+[x] - Create Question struct in the types package.
 [x] - Add MustHaveKey method to Question struct
 [x] - Add GetQuestion, DeleteQuestion and UpdateQuestion methods
 [x] - Separate create and update validation functions
-[ ] - Add minimum and maximum methods to QuestionLabel struct for validation
+[x] - Add minimum and maximum methods to QuestionLabel struct for validation
 [ ] - Add environment variables and read with https://github.com/joho/godotenv
 [ ] - Add postgres and mongodb database
   https://vercel.com/docs/storage/vercel-postgres
@@ -24,6 +25,5 @@ TODOs
   [ ] - Add database connection and query methods
   [ ] - Add database migration methods
   [ ] - Add database seeding methods
-[ ] - Create Question and Form structs in the types package.
+[ ] - Create Form struct in the types package.
 [ ] - Send a custom validation code for different cases
-[ ] - Separate question struct into different files
