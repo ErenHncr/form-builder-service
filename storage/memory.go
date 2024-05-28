@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/erenhncr/go-api-structure/types"
@@ -53,6 +54,17 @@ func init() {
 	addExampleQuestion()
 }
 
+func findIndexByID(id string) int {
+	questionIndex := -1
+	for i, element := range questions {
+		if element.ID == id {
+			questionIndex = i
+			break
+		}
+	}
+	return questionIndex
+}
+
 func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Question {
 	filteredQuestions := []types.Question{}
 
@@ -71,15 +83,27 @@ func (s *MemoryStorage) CreateQuestion(question types.Question) error {
 
 	return nil
 }
+func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
+	questionIndex := findIndexByID(id)
+
+	if questionIndex == -1 {
+		return nil, fmt.Errorf("invalid_id")
+	}
+
+	selectedQuestion := questions[questionIndex]
+
+	qCopy, err := json.Marshal(q)
+	if err != nil {
+		return nil, fmt.Errorf("invalid_marshal_operation")
+	}
+
+	json.Unmarshal(qCopy, &selectedQuestion)
+
+	return &selectedQuestion, nil
+}
 
 func (s *MemoryStorage) DeleteQuestion(id string) error {
-	questionIndex := -1
-	for i, element := range questions {
-		if element.ID == id {
-			questionIndex = i
-			break
-		}
-	}
+	questionIndex := findIndexByID(id)
 
 	if questionIndex == -1 {
 		return fmt.Errorf("invalid_id")

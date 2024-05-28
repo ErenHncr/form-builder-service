@@ -75,7 +75,43 @@ func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(question)
 }
 
-func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Request) {}
+func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Request) {
+	questionId := r.PathValue("id")
+
+	if questionId == "" {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "question_id_required")
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	question := types.NewQuestion()
+	if err := json.NewDecoder(r.Body).Decode(question); err != nil {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "invalid_json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	if isValid, validations := question.Validate(); !isValid {
+		errorResponse := types.ErrorResponse{}
+		for _, validation := range validations {
+			errorResponse.Add(types.ErrorCodeBadRequest, validation)
+		}
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	updatedQuestion, err := server.store.UpdateQuestion(questionId, *question)
+	if err != nil {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	json.NewEncoder(w).Encode(updatedQuestion)
+}
+
 func (server *Server) handleDeleteQuestion(w http.ResponseWriter, r *http.Request) {
 	questionId := r.PathValue("id")
 
