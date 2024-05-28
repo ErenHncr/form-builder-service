@@ -25,19 +25,21 @@ func (t QuestionType) String() string {
 type validationKey string
 
 const (
-	invalidKey        = "invalid_key"
-	invalidType       = "invalid_type"
-	invalidLabel      = "invalid_label"
-	invalidLabelKey   = "invalid_label_key"
-	invalidLabelValue = "invalid_label_value"
+	invalidKey              = "invalid_key"
+	invalidType             = "invalid_type"
+	invalidLabel            = "invalid_label"
+	invalidLabelKey         = "invalid_label_key"
+	invalidLabelValue       = "invalid_label_value"
+	invalidLabelValueLength = "invalid_label_value_length_1_254"
 )
 
 var validationError = map[validationKey]string{
-	invalidKey:        invalidKey,
-	invalidType:       invalidType,
-	invalidLabel:      invalidLabel,
-	invalidLabelKey:   invalidLabelKey,
-	invalidLabelValue: invalidLabelValue,
+	invalidKey:              invalidKey,
+	invalidType:             invalidType,
+	invalidLabel:            invalidLabel,
+	invalidLabelKey:         invalidLabelKey,
+	invalidLabelValue:       invalidLabelValue,
+	invalidLabelValueLength: invalidLabelValueLength,
 }
 
 type QuestionLink struct {
@@ -135,6 +137,8 @@ func (q *Question) MustHaveLabel() string {
 			return message
 		} else if q.Label[labelKey] == "" {
 			message = fmt.Errorf(validationError[invalidLabelValue]).Error()
+		} else if !(len(q.Label[labelKey]) > 0 && len(q.Label[labelKey]) < 255) {
+			message = fmt.Errorf(validationError[invalidLabelValueLength]).Error()
 		}
 	}
 

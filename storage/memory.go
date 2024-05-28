@@ -97,7 +97,9 @@ func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Ques
 		return nil, fmt.Errorf("invalid_marshal_operation")
 	}
 
+	id = selectedQuestion.ID
 	json.Unmarshal(qCopy, &selectedQuestion)
+	selectedQuestion.ID = id
 
 	return &selectedQuestion, nil
 }

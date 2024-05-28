@@ -84,7 +84,7 @@ func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	question := types.NewQuestion()
+	question := &types.Question{}
 	if err := json.NewDecoder(r.Body).Decode(question); err != nil {
 		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "invalid_json")
 		w.WriteHeader(http.StatusBadRequest)
