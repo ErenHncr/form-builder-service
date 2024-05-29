@@ -2,11 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"math"
 	"net/http"
 	"strconv"
 
 	"github.com/erenhncr/go-api-structure/types"
+	"github.com/erenhncr/go-api-structure/util"
 )
 
 func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +42,26 @@ func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(response)
 }
 
+func (server *Server) handleGetQuestion(w http.ResponseWriter, r *http.Request) {
+	questionId := r.PathValue("id")
+
+	if questionId == "" {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "question_id_required")
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	question, err := server.store.GetQuestion(questionId)
+	if err != nil {
+		errorResponse := types.NewErrorResponse(types.ErrorCodeNotFound, err.Error())
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(errorResponse)
+		return
+	}
+
+	json.NewEncoder(w).Encode(question)
+}
+
 func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Request) {
 	question := types.NewQuestion()
 
@@ -52,7 +74,7 @@ func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	isValid, validations := question.Validate()
+	isValid, validations := question.Validate([]string{})
 
 	if !isValid {
 		errorResponse := types.ErrorResponse{}
@@ -85,14 +107,17 @@ func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Reques
 	}
 
 	question := &types.Question{}
-	if err := json.NewDecoder(r.Body).Decode(question); err != nil {
+	body, _ := io.ReadAll(r.Body)
+	bodyKeys := util.GetResponseBodyKeys(body)
+
+	if err := json.Unmarshal(body, question); err != nil {
 		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "invalid_json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
 
-	if isValid, validations := question.Validate(); !isValid {
+	if isValid, validations := question.Validate(bodyKeys); !isValid {
 		errorResponse := types.ErrorResponse{}
 		for _, validation := range validations {
 			errorResponse.Add(types.ErrorCodeBadRequest, validation)

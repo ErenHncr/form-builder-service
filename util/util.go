@@ -2,11 +2,9 @@ package util
 
 import (
 	"encoding/json"
-	"io"
 )
 
-func GetResponseBodyKeys(body io.ReadCloser) []string {
-	bodyBytes, _ := io.ReadAll(body)
+func GetResponseBodyKeys(bodyBytes []byte) []string {
 	jsonMap := make(map[string]json.RawMessage)
 	err := json.Unmarshal(bodyBytes, &jsonMap)
 

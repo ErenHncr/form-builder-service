@@ -78,19 +78,29 @@ func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Questi
 	return filteredQuestions
 }
 
-func (s *MemoryStorage) CreateQuestion(question types.Question) error {
-	questions = append(questions, question)
-
-	return nil
-}
-func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
+func (s *MemoryStorage) GetQuestion(id string) (*types.Question, error) {
 	questionIndex := findIndexByID(id)
 
 	if questionIndex == -1 {
 		return nil, fmt.Errorf("invalid_id")
 	}
 
-	selectedQuestion := questions[questionIndex]
+	question := questions[questionIndex]
+
+	return &question, nil
+}
+
+func (s *MemoryStorage) CreateQuestion(question types.Question) error {
+	questions = append(questions, question)
+
+	return nil
+}
+func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
+	selectedQuestion, err := s.GetQuestion(id)
+
+	if err != nil {
+		return nil, err
+	}
 
 	qCopy, err := json.Marshal(q)
 	if err != nil {
@@ -101,7 +111,7 @@ func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Ques
 	json.Unmarshal(qCopy, &selectedQuestion)
 	selectedQuestion.ID = id
 
-	return &selectedQuestion, nil
+	return selectedQuestion, nil
 }
 
 func (s *MemoryStorage) DeleteQuestion(id string) error {

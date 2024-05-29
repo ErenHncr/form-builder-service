@@ -26,15 +26,17 @@ type validationKey string
 
 const (
 	invalidKey              = "invalid_key"
+	invalidKeyLength        = "invalid_key_length_6_50"
 	invalidType             = "invalid_type"
 	invalidLabel            = "invalid_label"
 	invalidLabelKey         = "invalid_label_key"
 	invalidLabelValue       = "invalid_label_value"
-	invalidLabelValueLength = "invalid_label_value_length_1_254"
+	invalidLabelValueLength = "invalid_label_value_length_6_254"
 )
 
 var validationError = map[validationKey]string{
 	invalidKey:              invalidKey,
+	invalidKeyLength:        invalidKeyLength,
 	invalidType:             invalidType,
 	invalidLabel:            invalidLabel,
 	invalidLabelKey:         invalidLabelKey,
@@ -112,6 +114,8 @@ func NewQuestion() *Question {
 func (q *Question) MustHaveKey() string {
 	if q.Key == "" {
 		return fmt.Errorf(validationError[invalidKey]).Error()
+	} else if !(len(q.Key) >= 6 && len(q.Key) <= 50) {
+		return fmt.Errorf(validationError[invalidKeyLength]).Error()
 	}
 	return ""
 }
@@ -137,7 +141,7 @@ func (q *Question) MustHaveLabel() string {
 			return message
 		} else if q.Label[labelKey] == "" {
 			message = fmt.Errorf(validationError[invalidLabelValue]).Error()
-		} else if !(len(q.Label[labelKey]) > 0 && len(q.Label[labelKey]) < 255) {
+		} else if !(len(q.Label[labelKey]) >= 6 && len(q.Label[labelKey]) < 255) {
 			message = fmt.Errorf(validationError[invalidLabelValueLength]).Error()
 		}
 	}
@@ -145,8 +149,36 @@ func (q *Question) MustHaveLabel() string {
 	return message
 }
 
-func (q *Question) Validate() (bool, []string) {
-	validations := []string{q.MustHaveKey(), q.MustHaveType(), q.MustHaveLabel()}
+func (q *Question) defaultValidations() []string {
+	return []string{q.MustHaveKey(), q.MustHaveType(), q.MustHaveLabel()}
+}
+
+func (q *Question) getValidations(validationKeys []string) []string {
+	validations := q.defaultValidations()
+
+	if len(validationKeys) > 0 {
+		validations = make([]string, 0)
+		for _, key := range validationKeys {
+			if key == "key" {
+				validations = append(validations, q.MustHaveKey())
+			}
+			if key == "type" {
+				validations = append(validations, q.MustHaveType())
+			}
+
+			if key == "label" {
+				validations = append(validations, q.MustHaveLabel())
+			}
+
+		}
+	}
+
+	return validations
+}
+
+func (q *Question) Validate(fieldKeys []string) (bool, []string) {
+	validations := q.getValidations(fieldKeys)
+
 	isValid := true
 	validationErrors := make([]string, 0)
 

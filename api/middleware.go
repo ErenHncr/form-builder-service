@@ -12,6 +12,10 @@ func (server *Server) questionsMiddleware(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
+		if id := r.PathValue("id"); id != "" {
+			server.handleGetQuestion(w, r)
+			return
+		}
 		server.handleGetQuestions(w, r)
 	case http.MethodPost:
 		server.handleCreateQuestion(w, r)
