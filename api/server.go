@@ -19,8 +19,8 @@ func NewServer(listenAddr string, store storage.Storage) *Server {
 }
 
 func (server *Server) Start() error {
-	http.HandleFunc("/questions", server.questionsMiddleware)
 	http.HandleFunc("/questions/{id}", server.questionsMiddleware)
+	http.HandleFunc("/questions", server.questionsMiddleware)
 
 	return http.ListenAndServe(server.listenAddr, nil)
 }

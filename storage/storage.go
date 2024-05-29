@@ -1,6 +1,16 @@
 package storage
 
-import "github.com/erenhncr/go-api-structure/types"
+import (
+	"log"
+	"os"
+
+	"github.com/erenhncr/go-api-structure/types"
+)
+
+const (
+	mongodb = "mongodb"
+	memory  = "memory"
+)
 
 type Storage interface {
 	GetQuestions(types.Pagination) []types.Question
@@ -8,4 +18,26 @@ type Storage interface {
 	CreateQuestion(types.Question) error
 	DeleteQuestion(string) error
 	UpdateQuestion(string, types.Question) (*types.Question, error)
+}
+
+func NewStorage() Storage {
+	engineName := os.Getenv("DATABASE")
+
+	var storage struct {
+		name   string
+		engine Storage
+	}
+
+	switch engineName {
+	case mongodb:
+		storage.name = mongodb
+		storage.engine = &MongoDBStorage{}
+	default:
+		storage.name = memory
+		storage.engine = &MemoryStorage{}
+	}
+
+	log.Printf("database engine: %v", storage.name)
+
+	return storage.engine
 }

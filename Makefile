@@ -1,2 +1,2 @@
 dev:
-	go run .
+	go run . -env-file .env.dev
