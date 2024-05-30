@@ -5,17 +5,19 @@ import "net/http"
 type ErrorCodeKey int
 
 const (
-	ErrorCodeDefault           = 100
-	ErrorCodeBadRequest        = http.StatusBadRequest
-	ErrorCodeNotFound          = http.StatusNotFound
-	ErrorCodeUnsupportedMethod = http.StatusMethodNotAllowed
+	ErrorCodeDefault             = 100
+	ErrorCodeBadRequest          = http.StatusBadRequest
+	ErrorCodeNotFound            = http.StatusNotFound
+	ErrorCodeUnsupportedMethod   = http.StatusMethodNotAllowed
+	ErrorCodeInternalServerError = http.StatusInternalServerError
 )
 
 var ErrorCode = map[ErrorCodeKey]string{
-	ErrorCodeDefault:           "default",
-	ErrorCodeBadRequest:        "bad_request",
-	ErrorCodeNotFound:          "not_found",
-	ErrorCodeUnsupportedMethod: "unsupported_method",
+	ErrorCodeDefault:             "default",
+	ErrorCodeBadRequest:          "bad_request",
+	ErrorCodeNotFound:            "not_found",
+	ErrorCodeUnsupportedMethod:   "unsupported_method",
+	ErrorCodeInternalServerError: "internal_server_error",
 }
 
 func (k ErrorCodeKey) String() string {

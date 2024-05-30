@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
+	"time"
 
 	"github.com/erenhncr/go-api-structure/api"
 	"github.com/erenhncr/go-api-structure/storage"
@@ -21,7 +23,17 @@ func main() {
 	}
 	log.Printf("environment file: %v", *envFile)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	store := storage.NewStorage()
+	err = store.Connect(ctx)
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+
+	defer store.Disconnect(ctx)
+	defer cancel()
 
 	server := api.NewServer(*listenAddr, store)
 	log.Println("server running on port:", *listenAddr)

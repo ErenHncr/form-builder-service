@@ -63,7 +63,7 @@ func (server *Server) handleGetQuestion(w http.ResponseWriter, r *http.Request) 
 }
 
 func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Request) {
-	question := types.NewQuestion()
+	question := &types.Question{}
 
 	err := json.NewDecoder(r.Body).Decode(question)
 
@@ -85,16 +85,16 @@ func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = server.store.CreateQuestion(*question)
+	createdQuestion, err := server.store.CreateQuestion(*question)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		errorResponse := types.NewErrorResponse(types.ErrorCodeDefault, "")
+		errorResponse := types.NewErrorResponse(types.ErrorCodeInternalServerError, err.Error())
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(question)
+	json.NewEncoder(w).Encode(createdQuestion)
 }
 
 func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Request) {

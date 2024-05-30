@@ -17,7 +17,7 @@ TODOs
 [x] - Add minimum and maximum methods to QuestionLabel struct for validation
 [x] - Add minimum and maximum key length validation
 [x] - Add GET method for questions
-[ ] - Add environment variables and read with https://github.com/joho/godotenv
+[x] - Add environment variables and read with https://github.com/joho/godotenv
 [ ] - Add postgres and mongodb database
   https://vercel.com/docs/storage/vercel-postgres
   [ ] - Migration

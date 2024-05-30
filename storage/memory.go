@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -65,6 +66,14 @@ func findIndexByID(id string) int {
 	return questionIndex
 }
 
+func (s *MemoryStorage) Connect(context.Context) error {
+	return nil
+}
+
+func (s *MemoryStorage) Disconnect(ctx context.Context) error {
+	return nil
+}
+
 func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Question {
 	filteredQuestions := []types.Question{}
 
@@ -90,10 +99,11 @@ func (s *MemoryStorage) GetQuestion(id string) (*types.Question, error) {
 	return &question, nil
 }
 
-func (s *MemoryStorage) CreateQuestion(question types.Question) error {
+func (s *MemoryStorage) CreateQuestion(question types.Question) (*types.Question, error) {
+	question.ID = uuid.New().String()
 	questions = append(questions, question)
 
-	return nil
+	return &question, nil
 }
 func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
 	selectedQuestion, err := s.GetQuestion(id)

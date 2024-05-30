@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -13,9 +14,11 @@ const (
 )
 
 type Storage interface {
+	Connect(context.Context) error
+	Disconnect(context.Context) error
 	GetQuestions(types.Pagination) []types.Question
 	GetQuestion(string) (*types.Question, error)
-	CreateQuestion(types.Question) error
+	CreateQuestion(types.Question) (*types.Question, error)
 	DeleteQuestion(string) error
 	UpdateQuestion(string, types.Question) (*types.Question, error)
 }

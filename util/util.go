@@ -2,7 +2,16 @@ package util
 
 import (
 	"encoding/json"
+	"os"
 )
+
+func GetDatabaseURL() string {
+	return os.Getenv("DATABASE_URL")
+}
+
+func GetDatabaseName() string {
+	return os.Getenv("DATABASE_NAME")
+}
 
 func GetResponseBodyKeys(bodyBytes []byte) []string {
 	jsonMap := make(map[string]json.RawMessage)
