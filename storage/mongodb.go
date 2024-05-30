@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/erenhncr/go-api-structure/types"
 	"github.com/erenhncr/go-api-structure/util"
@@ -37,7 +38,9 @@ func (s *MongoDBStorage) Connect(ctx context.Context) error {
 		return fmt.Errorf("database url cannot be empty")
 	}
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(databaseUrl))
+	opts := options.Client()
+	opts.SetConnectTimeout(25 * time.Second)
+	client, err := mongo.Connect(ctx, opts.ApplyURI(databaseUrl))
 	if err != nil {
 		return fmt.Errorf("database connection error: %v", err)
 	}
@@ -67,13 +70,31 @@ func (s *MongoDBStorage) GetQuestions(pagination types.Pagination) []types.Quest
 }
 
 func (s *MongoDBStorage) GetQuestion(id string) (*types.Question, error) {
-	return nil, nil
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, fmt.Errorf("invalid_id")
+	}
+
+	collection := s.getCollection(questionCollection)
+	filter := bson.M{"_id": objectId}
+
+	var question *types.Question
+	err = collection.FindOne(s.context, filter).Decode(&question)
+
+	if err != nil {
+		return nil, fmt.Errorf("not_found")
+	}
+
+	return question, nil
 }
 
 func (s *MongoDBStorage) CreateQuestion(question types.Question) (*types.Question, error) {
 	collection := s.getCollection(questionCollection)
 
-	result, err := collection.InsertOne(s.context, question)
+	ctx, cancel := context.WithTimeout(s.context, 10*time.Second)
+	defer cancel()
+	result, err := collection.InsertOne(ctx, question)
 	if err != nil {
 		return nil, fmt.Errorf("create_question_error %v", err.Error())
 	}

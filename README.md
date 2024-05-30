@@ -19,13 +19,22 @@ TODOs
 [x] - Add GET method for questions
 [x] - Add environment variables and read with https://github.com/joho/godotenv
 [ ] - Add postgres and mongodb database
-  https://vercel.com/docs/storage/vercel-postgres
-  [ ] - Migration
-    - https://www.freecodecamp.org/news/database-migration-golang-migrate/
-    - https://github.com/pressly/goose and https://sqlc.dev
-    - https://github.com/jackc/tern and https://github.com/jackc/pgx
-  [ ] - Add database connection and query methods
-  [ ] - Add database migration methods
-  [ ] - Add database seeding methods
+  [ ] - Add mongodb storage
+    [x] - Add database connection
+    [ ] - Add query methods
+      [x] - Add Create method
+      [x] - Add Get method
+      [ ] - Add List method
+      [ ] - Add Update method
+      [ ] - Add Delete method
+  [ ] - Add postgres storage
+    https://vercel.com/docs/storage/vercel-postgres
+    [ ] - Migration
+      - https://www.freecodecamp.org/news/database-migration-golang-migrate/
+      - https://github.com/pressly/goose and https://sqlc.dev
+      - https://github.com/jackc/tern and https://github.com/jackc/pgx
+    [ ] - Add database connection and query methods
+    [ ] - Add database migration methods
+    [ ] - Add database seeding methods
 [ ] - Create Form struct in the types package.
 [ ] - Send a custom validation code for different cases
