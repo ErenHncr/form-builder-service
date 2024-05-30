@@ -24,9 +24,13 @@ TODOs
     [ ] - Add query methods
       [x] - Add Create method
       [x] - Add Get method
-      [ ] - Add List method
+      [x] - Add Delete method
+      [x] - Add List method
+        [x] - Add pagination
+        [ ] - Add sorting
+          [x] - add default sorting for createdAt field
+          [ ] - add custom sorting for different fields
       [ ] - Add Update method
-      [ ] - Add Delete method
   [ ] - Add postgres storage
     https://vercel.com/docs/storage/vercel-postgres
     [ ] - Migration

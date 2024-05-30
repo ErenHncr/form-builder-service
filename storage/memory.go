@@ -74,7 +74,7 @@ func (s *MemoryStorage) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Question {
+func (s *MemoryStorage) GetQuestions(pagination types.Pagination) ([]types.Question, int, error) {
 	filteredQuestions := []types.Question{}
 
 	startingIndex := ((pagination.Page - 1) * pagination.Size)
@@ -84,7 +84,7 @@ func (s *MemoryStorage) GetQuestions(pagination types.Pagination) []types.Questi
 		}
 	}
 
-	return filteredQuestions
+	return filteredQuestions, len(questions), nil
 }
 
 func (s *MemoryStorage) GetQuestion(id string) (*types.Question, error) {

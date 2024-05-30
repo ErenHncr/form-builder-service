@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -86,7 +87,7 @@ type QuestionDisplayCondition struct {
 type QuestionLabel map[LanguageKey]string
 
 type Question struct {
-	ID         string           `json:"id"`
+	ID         string           `json:"id" bson:"_id,omitempty"`
 	IsRequired bool             `json:"isRequired"`
 	Key        string           `json:"key"`
 	Label      QuestionLabel    `json:"label"`
@@ -98,6 +99,8 @@ type Question struct {
 	PDF        string           `json:"pdf"`
 	Video      *QuestionVideo   `json:"video"`
 	Display    *QuestionDisplay `json:"display"`
+	CreatedAt  time.Time        `json:"createdAt"`
+	UpdatedAt  time.Time        `json:"updatedAt"`
 }
 
 func NewQuestion() *Question {

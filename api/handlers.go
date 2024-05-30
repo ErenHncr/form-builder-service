@@ -3,41 +3,23 @@ package api
 import (
 	"encoding/json"
 	"io"
-	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/erenhncr/go-api-structure/types"
 	"github.com/erenhncr/go-api-structure/util"
 )
 
 func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
-	page := r.URL.Query().Get("page")
-	size := r.URL.Query().Get("size")
+	pagination := util.GetPagination(r)
 
-	pageInt, err := strconv.Atoi(page)
+	questions, totalItems, err := server.store.GetQuestions(pagination)
 	if err != nil {
-		pageInt = types.DefaultPageNumber
-	}
-
-	sizeInt, err := strconv.Atoi(size)
-	if err != nil {
-		sizeInt = types.DefaultPageSize
-	}
-
-	pagination := types.NewPagination(pageInt, sizeInt)
-
-	questions := server.store.GetQuestions(pagination)
-
-	if len(questions) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		errorResponse := types.NewErrorResponse(types.ErrorCodeNotFound, "")
-		json.NewEncoder(w).Encode(errorResponse)
+		util.InternalServerError(w, err)
 		return
 	}
 
-	totalPages := math.Ceil(float64(len(questions)) / float64(pagination.Size))
-	response := types.NewPaginatedResponse(questions, pagination, len(questions), int(totalPages))
+	totalPages := util.GetTotalPages(totalItems, pagination.Size)
+	response := types.NewPaginatedResponse(questions, pagination, totalItems, totalPages)
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -64,18 +46,12 @@ func (server *Server) handleGetQuestion(w http.ResponseWriter, r *http.Request) 
 
 func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Request) {
 	question := &types.Question{}
-
-	err := json.NewDecoder(r.Body).Decode(question)
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, "")
-		json.NewEncoder(w).Encode(errorResponse)
+	if err := json.NewDecoder(r.Body).Decode(question); err != nil {
+		util.BadRequest(w, err)
 		return
 	}
 
 	isValid, validations := question.Validate([]string{})
-
 	if !isValid {
 		errorResponse := types.ErrorResponse{}
 		for _, validation := range validations {
@@ -87,9 +63,7 @@ func (server *Server) handleCreateQuestion(w http.ResponseWriter, r *http.Reques
 
 	createdQuestion, err := server.store.CreateQuestion(*question)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		errorResponse := types.NewErrorResponse(types.ErrorCodeInternalServerError, err.Error())
-		json.NewEncoder(w).Encode(errorResponse)
+		util.InternalServerError(w, err)
 		return
 	}
 
@@ -147,9 +121,7 @@ func (server *Server) handleDeleteQuestion(w http.ResponseWriter, r *http.Reques
 	}
 
 	if err := server.store.DeleteQuestion(questionId); err != nil {
-		errorResponse := types.NewErrorResponse(types.ErrorCodeNotFound, err.Error())
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(errorResponse)
+		util.NotFound(w, err)
 		return
 	}
 

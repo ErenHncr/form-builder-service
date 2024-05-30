@@ -27,6 +27,15 @@ func (s *MongoDBStorage) getCollection(collectionName string) *mongo.Collection 
 	return s.client.Database(util.GetDatabaseName()).Collection(collectionName)
 }
 
+func getObjectID(id string) (primitive.ObjectID, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return primitive.ObjectID{}, fmt.Errorf("invalid_id")
+	}
+	return objectId, nil
+}
+
 func (s *MongoDBStorage) Connect(ctx context.Context) error {
 	databaseUrl := util.GetDatabaseURL()
 	databaseName := util.GetDatabaseName()
@@ -39,7 +48,7 @@ func (s *MongoDBStorage) Connect(ctx context.Context) error {
 	}
 
 	opts := options.Client()
-	opts.SetConnectTimeout(25 * time.Second)
+	opts.SetConnectTimeout(30 * time.Second)
 	client, err := mongo.Connect(ctx, opts.ApplyURI(databaseUrl))
 	if err != nil {
 		return fmt.Errorf("database connection error: %v", err)
@@ -65,15 +74,43 @@ func (s *MongoDBStorage) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (s *MongoDBStorage) GetQuestions(pagination types.Pagination) []types.Question {
-	return []types.Question{}
+func (s *MongoDBStorage) GetQuestions(pagination types.Pagination) ([]types.Question, int, error) {
+	collection := s.getCollection(questionCollection)
+	filter := bson.D{}
+
+	totalItems, err := collection.CountDocuments(s.context, filter)
+	if err != nil {
+		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+	}
+
+	itemCursor := (pagination.Page * pagination.Size) - pagination.Size
+	if int(totalItems)-itemCursor <= 0 {
+		return []types.Question{}, int(totalItems), nil
+	}
+
+	opts := options.Find()
+	opts.SetSort(bson.M{"createdat": -1})
+	opts.SetLimit(int64(pagination.Size)).SetSkip(int64(pagination.Page - 1))
+	opts.SetMaxAwaitTime(30 * time.Second)
+
+	var results []types.Question
+	cursor, err := collection.Find(s.context, filter, opts)
+	if err != nil {
+		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+	}
+
+	if err = cursor.All(s.context, &results); err != nil {
+		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+	}
+
+	return results, int(totalItems), nil
 }
 
 func (s *MongoDBStorage) GetQuestion(id string) (*types.Question, error) {
-	objectId, err := primitive.ObjectIDFromHex(id)
+	objectId, err := getObjectID(id)
 
 	if err != nil {
-		return nil, fmt.Errorf("invalid_id")
+		return nil, err
 	}
 
 	collection := s.getCollection(questionCollection)
@@ -92,8 +129,13 @@ func (s *MongoDBStorage) GetQuestion(id string) (*types.Question, error) {
 func (s *MongoDBStorage) CreateQuestion(question types.Question) (*types.Question, error) {
 	collection := s.getCollection(questionCollection)
 
-	ctx, cancel := context.WithTimeout(s.context, 10*time.Second)
+	ctx, cancel := context.WithTimeout(s.context, 15*time.Second)
 	defer cancel()
+
+	createdAt := time.Now()
+	question.CreatedAt = createdAt
+	question.UpdatedAt = createdAt
+
 	result, err := collection.InsertOne(ctx, question)
 	if err != nil {
 		return nil, fmt.Errorf("create_question_error %v", err.Error())
@@ -109,5 +151,19 @@ func (s *MongoDBStorage) UpdateQuestion(id string, q types.Question) (*types.Que
 }
 
 func (s *MongoDBStorage) DeleteQuestion(id string) error {
+	objectId, err := getObjectID(id)
+
+	if err != nil {
+		return err
+	}
+
+	collection := s.getCollection(questionCollection)
+	filter := bson.M{"_id": objectId}
+	_, err = collection.DeleteOne(s.context, filter)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

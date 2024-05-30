@@ -18,7 +18,7 @@ func NewPagination(page int, size int) Pagination {
 	if size == 0 || size < 0 {
 		pagination.Size = DefaultPageSize
 	} else {
-		pagination.Size = size
+		pagination.Size = min(size, 50)
 	}
 
 	return pagination
@@ -39,6 +39,8 @@ func NewPaginatedResponse[DataType any](data []DataType, pagination Pagination, 
 
 	if pagination.Page == prev || totalPages == pagination.Page {
 		prev = 0
+	} else if pagination.Page > totalPages {
+		prev = totalPages
 	}
 
 	if next > totalPages {
