@@ -8,6 +8,15 @@ This is a simple API structure for a Go application. The structure is designed t
 Entry point of the application is in the ```main.go``` file. The ```main.go``` file initializes the database and starts the server. The server is started on port ```3000``` by default. ```listenaddr``` parameter in the ```main.go``` file can be changed to start the server on a different port.
 
 
+### Benchmarking the API
+
+```GET /questions```
+
+12 threads, 500 connections, 30 seconds
+```bash
+wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
+```
+
 TODOs
 
 [x] - Create Question struct in the types package.
