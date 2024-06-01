@@ -9,7 +9,14 @@ Entry point of the application is in the ```main.go``` file. The ```main.go``` f
 
 
 ### Benchmarking the API
+[**wrk**](https://github.com/wg/wrk) is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It combines a multithreaded design with scalable event notification systems such as epoll and kqueue. An optional LuaJIT script can perform HTTP request generation, response processing, and custom reporting.
 
+#### Installation
+```bash
+brew install wrk
+```
+
+#### Usage
 ```GET /questions```
 
 12 threads, 500 connections, 30 seconds
@@ -17,37 +24,37 @@ Entry point of the application is in the ```main.go``` file. The ```main.go``` f
 wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
 ```
 
-TODOs
+### To Do
 
-[x] - Create Question struct in the types package.
-[x] - Add MustHaveKey method to Question struct
-[x] - Add GetQuestion, DeleteQuestion and UpdateQuestion methods
-[x] - Separate create and update validation functions
-[x] - Add minimum and maximum methods to QuestionLabel struct for validation
-[x] - Add minimum and maximum key length validation
-[x] - Add GET method for questions
-[x] - Add environment variables and read with https://github.com/joho/godotenv
-[ ] - Add postgres and mongodb database
-  [ ] - Add mongodb storage
-    [x] - Add database connection
-    [ ] - Add query methods
-      [x] - Add Create method
-      [x] - Add Get method
-      [x] - Add Delete method
-      [x] - Add List method
-        [x] - Add pagination
-        [ ] - Add sorting
-          [x] - add default sorting for createdAt field
-          [ ] - add custom sorting for different fields
-      [X] - Add Update method
-  [ ] - Add postgres storage
+- [x] Create Question struct in the types package.
+- [x] Add MustHaveKey method to Question struct
+- [x] Add GetQuestion, DeleteQuestion and UpdateQuestion methods
+- [x] Separate create and update validation functions
+- [x] Add minimum and maximum methods to QuestionLabel struct for validation
+- [x] Add minimum and maximum key length validation
+- [x] Add GET method for questions
+- [x] Add environment variables and read with https://github.com/joho/godotenv
+- [ ] Add postgres and mongodb database
+  - [ ] Add mongodb storage
+    - [x] Add database connection
+    - [ ] Add query methods
+      - [x] Add Create method
+      - [x] Add Get method
+      - [x] Add Delete method
+      - [x] Add List method
+        - [x] Add pagination
+        - [ ] Add sorting
+          - [x] add default sorting for createdAt field
+          - [ ] add custom sorting for different fields
+      - [x] Add Update method
+  - [ ] Add postgres storage
     https://vercel.com/docs/storage/vercel-postgres
-    [ ] - Migration
-      - https://www.freecodecamp.org/news/database-migration-golang-migrate/
-      - https://github.com/pressly/goose and https://sqlc.dev
-      - https://github.com/jackc/tern and https://github.com/jackc/pgx
-    [ ] - Add database connection and query methods
-    [ ] - Add database migration methods
-    [ ] - Add database seeding methods
-[ ] - Create Form struct in the types package.
-[ ] - Send a custom validation code for different cases
+    - [ ] Migration
+      https://www.freecodecamp.org/news/database-migration-golang-migrate/
+      https://github.com/pressly/goose and https://sqlc.dev
+      https://github.com/jackc/tern and https://github.com/jackc/pgx
+    - [ ] Add database connection and query methods
+    - [ ] Add database migration methods
+    - [ ] Add database seeding methods
+- [ ] Create Form struct in the types package.
+- [ ] Send a custom validation code for different cases
