@@ -30,7 +30,7 @@ TODOs
         [ ] - Add sorting
           [x] - add default sorting for createdAt field
           [ ] - add custom sorting for different fields
-      [ ] - Add Update method
+      [X] - Add Update method
   [ ] - Add postgres storage
     https://vercel.com/docs/storage/vercel-postgres
     [ ] - Migration

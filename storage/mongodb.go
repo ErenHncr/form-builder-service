@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -133,6 +134,7 @@ func (s *MongoDBStorage) CreateQuestion(question types.Question) (*types.Questio
 	defer cancel()
 
 	createdAt := time.Now()
+	question.ID = ""
 	question.CreatedAt = createdAt
 	question.UpdatedAt = createdAt
 
@@ -146,8 +148,37 @@ func (s *MongoDBStorage) CreateQuestion(question types.Question) (*types.Questio
 
 	return &question, nil
 }
-func (s *MongoDBStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
-	return nil, nil
+
+func (s *MongoDBStorage) UpdateQuestion(id string, question types.QuestionPatch) (*types.Question, error) {
+	selectedQuestion, err := s.GetQuestion(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var questionBytes []byte
+	if questionBytes, err = json.Marshal(question); err != nil {
+		return nil, fmt.Errorf("invalid_marshal_operation")
+	}
+
+	newQuestion := *selectedQuestion
+	if err = json.Unmarshal(questionBytes, &newQuestion); err != nil {
+		return nil, fmt.Errorf("invalid_unmarshal_operation")
+	}
+
+	objectId, _ := getObjectID(id)
+	collection := s.getCollection(questionCollection)
+	filter := bson.M{"_id": objectId}
+
+	newQuestion.ID = ""
+	newQuestion.CreatedAt = selectedQuestion.CreatedAt
+	newQuestion.UpdatedAt = time.Now()
+
+	_, err = collection.ReplaceOne(s.context, filter, newQuestion)
+	if err != nil {
+		return nil, fmt.Errorf("update_question_error: %v", err.Error())
+	}
+
+	return &newQuestion, nil
 }
 
 func (s *MongoDBStorage) DeleteQuestion(id string) error {

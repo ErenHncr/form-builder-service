@@ -80,8 +80,13 @@ func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		util.BadRequest(w, err)
+		return
+	}
+
 	question := &types.Question{}
-	body, _ := io.ReadAll(r.Body)
 	bodyKeys := util.GetResponseBodyKeys(body)
 
 	if err := json.Unmarshal(body, question); err != nil {
@@ -100,7 +105,13 @@ func (server *Server) handleUpdateQuestion(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updatedQuestion, err := server.store.UpdateQuestion(questionId, *question)
+	var questionPatch types.QuestionPatch
+	if err = json.Unmarshal(body, &questionPatch); err != nil {
+		util.InternalServerError(w, err)
+		return
+	}
+
+	updatedQuestion, err := server.store.UpdateQuestion(questionId, questionPatch)
 	if err != nil {
 		errorResponse := types.NewErrorResponse(types.ErrorCodeBadRequest, err.Error())
 		w.WriteHeader(http.StatusBadRequest)

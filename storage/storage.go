@@ -20,7 +20,7 @@ type Storage interface {
 	GetQuestion(string) (*types.Question, error)
 	CreateQuestion(types.Question) (*types.Question, error)
 	DeleteQuestion(string) error
-	UpdateQuestion(string, types.Question) (*types.Question, error)
+	UpdateQuestion(string, types.QuestionPatch) (*types.Question, error)
 }
 
 func NewStorage() Storage {

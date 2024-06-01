@@ -105,7 +105,8 @@ func (s *MemoryStorage) CreateQuestion(question types.Question) (*types.Question
 
 	return &question, nil
 }
-func (s *MemoryStorage) UpdateQuestion(id string, q types.Question) (*types.Question, error) {
+
+func (s *MemoryStorage) UpdateQuestion(id string, q types.QuestionPatch) (*types.Question, error) {
 	selectedQuestion, err := s.GetQuestion(id)
 
 	if err != nil {

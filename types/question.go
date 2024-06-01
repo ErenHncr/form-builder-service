@@ -103,6 +103,20 @@ type Question struct {
 	UpdatedAt  time.Time        `json:"updatedAt"`
 }
 
+type QuestionPatch struct {
+	Key        string           `json:"key,omitempty"`
+	IsRequired bool             `json:"isRequired"`
+	Label      QuestionLabel    `json:"label,omitempty"`
+	Links      []QuestionLink   `json:"links,omitempty"`
+	Type       QuestionType     `json:"type,omitempty"`
+	Notes      []QuestionNote   `json:"notes,omitempty"`
+	Options    []QuestionOption `json:"options,omitempty"`
+	Parent     *QuestionParent  `json:"parent,omitempty"`
+	PDF        string           `json:"pdf,omitempty"`
+	Video      *QuestionVideo   `json:"video,omitempty"`
+	Display    *QuestionDisplay `json:"display,omitempty"`
+}
+
 func NewQuestion() *Question {
 	return &Question{
 		ID:         uuid.New().String(),
