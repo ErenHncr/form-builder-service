@@ -53,6 +53,13 @@ func GetPagination(r *http.Request) types.Pagination {
 	return pagination
 }
 
+func GetSorting(r *http.Request) []types.Sorting {
+	sort := r.URL.Query().Get("sort")
+	sorting := types.NewSorting(sort)
+
+	return sorting
+}
+
 func GetTotalPages(totalItems int, size int) int {
 	totalPages := math.Ceil(float64(totalItems) / float64(size))
 	return int(totalPages)

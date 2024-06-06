@@ -11,15 +11,16 @@ import (
 
 func (server *Server) handleGetQuestions(w http.ResponseWriter, r *http.Request) {
 	pagination := util.GetPagination(r)
+	sorting := util.GetSorting(r)
 
-	questions, totalItems, err := server.store.GetQuestions(pagination)
+	questions, totalItems, err := server.store.GetQuestions(pagination, sorting)
 	if err != nil {
 		util.InternalServerError(w, err)
 		return
 	}
 
 	totalPages := util.GetTotalPages(totalItems, pagination.Size)
-	response := types.NewPaginatedResponse(questions, pagination, totalItems, totalPages)
+	response := types.NewPaginatedResponse(questions, pagination, sorting, totalItems, totalPages)
 
 	json.NewEncoder(w).Encode(response)
 }

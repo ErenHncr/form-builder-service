@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/erenhncr/go-api-structure/types"
@@ -35,6 +36,16 @@ func getObjectID(id string) (primitive.ObjectID, error) {
 		return primitive.ObjectID{}, fmt.Errorf("invalid_id")
 	}
 	return objectId, nil
+}
+
+func getSortingOrder(sorting types.Sorting) int {
+	order := 1
+
+	if sorting.Order == types.SortingOrder(types.SortingOrderMap[types.OrderDesc]) {
+		order = -1
+	}
+
+	return order
 }
 
 func (s *MongoDBStorage) Connect(ctx context.Context) error {
@@ -75,13 +86,13 @@ func (s *MongoDBStorage) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (s *MongoDBStorage) GetQuestions(pagination types.Pagination) ([]types.Question, int, error) {
+func (s *MongoDBStorage) GetQuestions(pagination types.Pagination, sorting []types.Sorting) ([]types.Question, int, error) {
 	collection := s.getCollection(questionCollection)
 	filter := bson.D{}
 
 	totalItems, err := collection.CountDocuments(s.context, filter)
 	if err != nil {
-		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+		return nil, 0, err
 	}
 
 	itemCursor := (pagination.Page * pagination.Size) - pagination.Size
@@ -89,19 +100,34 @@ func (s *MongoDBStorage) GetQuestions(pagination types.Pagination) ([]types.Ques
 		return []types.Question{}, int(totalItems), nil
 	}
 
+	sortingMap := bson.D{
+		{Key: "updatedat", Value: -1},
+		{Key: "createdat", Value: -1},
+	}
+
+	for _, sortingValue := range sorting {
+		fieldKeyLower := strings.ToLower(sortingValue.Field)
+
+		for fieldIndex, field := range sortingMap {
+			if field.Key == fieldKeyLower {
+				sortingMap[fieldIndex].Value = getSortingOrder(sortingValue)
+			}
+		}
+	}
+
 	opts := options.Find()
-	opts.SetSort(bson.M{"createdat": -1})
+	opts.SetSort(sortingMap)
 	opts.SetLimit(int64(pagination.Size)).SetSkip(int64(pagination.Page - 1))
 	opts.SetMaxAwaitTime(30 * time.Second)
 
 	var results []types.Question
 	cursor, err := collection.Find(s.context, filter, opts)
 	if err != nil {
-		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+		return nil, 0, err
 	}
 
 	if err = cursor.All(s.context, &results); err != nil {
-		return nil, 0, fmt.Errorf(types.ErrorCode[types.ErrorCodeInternalServerError])
+		return nil, 0, err
 	}
 
 	return results, int(totalItems), nil

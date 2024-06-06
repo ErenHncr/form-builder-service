@@ -16,7 +16,7 @@ const (
 type Storage interface {
 	Connect(context.Context) error
 	Disconnect(context.Context) error
-	GetQuestions(types.Pagination) ([]types.Question, int, error)
+	GetQuestions(types.Pagination, []types.Sorting) ([]types.Question, int, error)
 	GetQuestion(string) (*types.Question, error)
 	CreateQuestion(types.Question) (*types.Question, error)
 	DeleteQuestion(string) error

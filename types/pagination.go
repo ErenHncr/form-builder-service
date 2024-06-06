@@ -31,9 +31,10 @@ type PaginatedResponse[DataType any] struct {
 	Next       int        `json:"next"`
 	TotalItems int        `json:"totalItems"`
 	TotalPages int        `json:"totalPages"`
+	Sorting    []Sorting  `json:"sorting"`
 }
 
-func NewPaginatedResponse[DataType any](data []DataType, pagination Pagination, totalItems int, totalPages int) PaginatedResponse[DataType] {
+func NewPaginatedResponse[DataType any](data []DataType, pagination Pagination, sorting []Sorting, totalItems int, totalPages int) PaginatedResponse[DataType] {
 	prev := max(pagination.Page-1, 1)
 	next := max(pagination.Page+1, 1)
 
@@ -54,5 +55,6 @@ func NewPaginatedResponse[DataType any](data []DataType, pagination Pagination, 
 		Next:       next,
 		TotalItems: totalItems,
 		TotalPages: totalPages,
+		Sorting:    sorting,
 	}
 }
