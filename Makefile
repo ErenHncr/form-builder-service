@@ -10,3 +10,5 @@ stop-docker:
 	docker compose down
 start-docker-withBuild:
 	docker compose up --build --force-recreate -d
+create-docs:
+	swag init

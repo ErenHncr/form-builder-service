@@ -10,6 +10,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// @title Form Builder API
+// @description This is a simple form builder API
+// @BasePath /
 func main() {
 	listenAddr := flag.String("listenaddr", "localhost:3000", "the server port")
 	envFile := flag.String("env-file", ".env", "env file location")

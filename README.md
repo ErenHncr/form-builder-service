@@ -35,17 +35,17 @@ wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
 - [x] Add GET method for questions
 - [x] Add environment variables and read with https://github.com/joho/godotenv
 - [ ] Add postgres and mongodb database
-  - [ ] Add mongodb storage
+  - [x] Add mongodb storage
     - [x] Add database connection
-    - [ ] Add query methods
+    - [x] Add query methods
       - [x] Add Create method
       - [x] Add Get method
       - [x] Add Delete method
       - [x] Add List method
         - [x] Add pagination
-        - [ ] Add sorting
+        - [x] Add sorting
           - [x] add default sorting for createdAt field
-          - [ ] add custom sorting for different fields
+          - [x] add custom sorting for different fields (updatedAt, createdAt)
       - [x] Add Update method
   - [ ] Add postgres storage
     https://vercel.com/docs/storage/vercel-postgres
@@ -57,4 +57,5 @@ wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
     - [ ] Add database migration methods
     - [ ] Add database seeding methods
 - [ ] Create Form struct in the types package.
-- [ ] Send a custom validation code for different cases
+- [x] add swagger documentation
+  - [x] add swagger documentation for questions
