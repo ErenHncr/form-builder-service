@@ -35,6 +35,7 @@ wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
 - [x] Add GET method for questions
 - [x] Add environment variables and read with https://github.com/joho/godotenv
 - [ ] Add postgres and mongodb database
+  - [ ] Add seeding database
   - [x] Add mongodb storage
     - [x] Add database connection
     - [x] Add query methods
@@ -55,7 +56,11 @@ wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
       https://github.com/jackc/tern and https://github.com/jackc/pgx
     - [ ] Add database connection and query methods
     - [ ] Add database migration methods
-    - [ ] Add database seeding methods
 - [ ] Create Form struct in the types package.
 - [x] add swagger documentation
   - [x] add swagger documentation for questions
+- [ ] add CI/CD pipeline
+  - [ ] add github actions
+  - [ ] add dockerfile
+  - [ ] add gcp cloud run deployment
+- [ ] Add validation for other question keys
