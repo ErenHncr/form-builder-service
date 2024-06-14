@@ -12,3 +12,7 @@ start-docker-withBuild:
 	docker compose up --build --force-recreate -d
 create-docs:
 	swag init
+start-postgres:
+	docker compose up -d postgres
+start-mongodb:
+	docker compose up -d mongodb

@@ -1,10 +1,24 @@
 name: question-service
 services:
   # DATABASE_URL=mongodb://admin:admin@127.0.0.1:27018/?directConnection=true&retryWrites=false&w=majority
-  mongodb:
+  mongodb:    
     image: mongodb/mongodb-atlas-local
     environment:
       - MONGODB_INITDB_ROOT_USERNAME=admin
       - MONGODB_INITDB_ROOT_PASSWORD=admin
     ports:
       - 27018:27017
+  # DATABASE_URL=postgres://admin:admin@127.0.0.1:5433/main?sslmode=disable
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=main
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5433:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+volumes:
+  pgdata:

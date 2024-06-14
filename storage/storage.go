@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	mongodb = "mongodb"
-	memory  = "memory"
+	postgres = "postgres"
+	mongodb  = "mongodb"
+	memory   = "memory"
 )
 
 type Storage interface {
@@ -32,6 +33,9 @@ func NewStorage() Storage {
 	}
 
 	switch engineName {
+	case postgres:
+		storage.name = postgres
+		storage.engine = &PostgresStorage{}
 	case mongodb:
 		storage.name = mongodb
 		storage.engine = &MongoDBStorage{}

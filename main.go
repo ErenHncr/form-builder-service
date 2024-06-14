@@ -18,8 +18,7 @@ func main() {
 	envFile := flag.String("env-file", ".env", "env file location")
 	flag.Parse()
 
-	err := godotenv.Load(*envFile)
-	if err != nil {
+	if err := godotenv.Load(*envFile); err != nil {
 		log.Fatal("error loading .env file")
 		return
 	}
@@ -27,13 +26,11 @@ func main() {
 
 	ctx := context.Background()
 	store := storage.NewStorage()
-	err = store.Connect(ctx)
 
-	if err != nil {
+	if err := store.Connect(ctx); err != nil {
 		log.Fatal(err.Error())
 		return
 	}
-
 	defer store.Disconnect(ctx)
 
 	server := api.NewServer(*listenAddr, store)
