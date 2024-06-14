@@ -51,9 +51,9 @@ wrk -t12 -c500 -d30s --latency http://127.0.0.1:3000/questions
   - [ ] Add postgres storage
     https://vercel.com/docs/storage/vercel-postgres
     - [ ] Migration
+      https://sqlc.dev - sqlc generates fully type-safe idiomatic Go code from SQL
+      https://github.com/pressly/goose
       https://www.freecodecamp.org/news/database-migration-golang-migrate/
-      https://github.com/pressly/goose and https://sqlc.dev
-      https://github.com/jackc/tern and https://github.com/jackc/pgx
     - [ ] Add database connection and query methods
     - [ ] Add database migration methods
 - [ ] Create Form struct in the types package.
